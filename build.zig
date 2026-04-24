@@ -15,9 +15,19 @@ pub fn build(b: *std.Build) void {
     if (b.args) |a| run.addArgs(a);
     const run_step = b.step("run", "Run release tool");
     run_step.dependOn(&run.step);
+
+    const tests = b.addTest(.{
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = b.graph.host,
+        }),
+    });
+    const test_step = b.step("test", "Run unit tests");
+    test_step.dependOn(&b.addRunArtifact(tests).step);
 }
 
-/// 供其他项目在 build.zig 中调用，添加 `zig build release -- patch` 命令
+/// Add a `zig build release -- patch|minor|major` step to the consuming project.
+/// Repo URL is auto-detected from `git remote get-url origin` if not specified.
 pub fn addReleaseStep(
     b: *std.Build,
     dep: *std.Build.Dependency,
