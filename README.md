@@ -1,25 +1,25 @@
+[中文](README_CN.md) | English
+
 # zig-release
 
-Zig 项目的跨平台发布工具。自动生成 CHANGELOG、更新版本号、打 tag、推送触发 CI。
+Cross-platform release tool for Zig projects. Auto-generates CHANGELOG, bumps version, tags, and pushes to trigger CI.
 
-零外部依赖，纯 Zig，Windows/Linux/macOS 通用。
+Zero external dependencies. Pure Zig. Works on Windows/Linux/macOS.
 
-## 在你的项目中使用
+## Usage in Your Project
 
-### 1. 添加依赖
+### 1. Add dependency
 
 `build.zig.zon`:
 
 ```zig
-.dependencies = .{
-    .@"zig-release" = .{
-        .url = "https://github.com/topaihub/zig-release/archive/{COMMIT_HASH}.tar.gz",
-        .hash = "...",
-    },
+.@"zig-release" = .{
+    .url = "https://github.com/topaihub/zig-release/archive/{COMMIT_HASH}.tar.gz",
+    .hash = "...",
 },
 ```
 
-### 2. 添加 release 命令
+### 2. Add release step
 
 `build.zig`:
 
@@ -29,7 +29,7 @@ const zig_release = @import("zig-release");
 zig_release.addReleaseStep(b, release_dep, .{});
 ```
 
-如果需要指定仓库 URL（默认自动从 git remote 检测）：
+To specify a repo URL (auto-detected from `git remote` by default):
 
 ```zig
 zig_release.addReleaseStep(b, release_dep, .{
@@ -37,39 +37,39 @@ zig_release.addReleaseStep(b, release_dep, .{
 });
 ```
 
-### 3. 发布
+### 3. Release
 
 ```bash
 zig build release -- patch    # v1.0.0 -> v1.0.1
 zig build release -- minor    # v1.0.0 -> v1.1.0
 zig build release -- major    # v1.0.0 -> v2.0.0
-zig build release -- 2.5.0    # 直接指定版本号
+zig build release -- 2.5.0    # specify version directly
 ```
 
-## 它做了什么
+## What It Does
 
-1. 从 git tag 获取当前版本
-2. 计算新版本号
-3. 从 git log 生成 CHANGELOG（按 conventional commits 分类，带 emoji）
-4. 预览让你确认
-5. 更新 `CHANGELOG.md`
-6. 更新 `build.zig.zon` 中的版本号
+1. Gets current version from latest git tag
+2. Calculates new version
+3. Generates CHANGELOG from git log (grouped by conventional commits, with emoji)
+4. Shows preview and asks for confirmation
+5. Updates `CHANGELOG.md`
+6. Updates version in `build.zig.zon`
 7. git commit → tag → push
-8. 触发 GitHub Actions / CI 构建发布
+8. Triggers GitHub Actions / CI build
 
-## Commit 分类
+## Commit Categories
 
-| 前缀 | 分类 |
-|------|------|
-| `feat` | ✨ 新功能 |
-| `fix` | 🐛 Bug 修复 |
-| `docs` | 📝 文档 |
-| `refactor` | ♻️ 重构 |
-| `perf` | ⚡ 性能优化 |
+| Prefix | Category |
+|--------|----------|
+| `feat` | ✨ New Features |
+| `fix` | 🐛 Bug Fixes |
+| `docs` | 📝 Documentation |
+| `refactor` | ♻️ Refactoring |
+| `perf` | ⚡ Performance |
 | `ci` | 👷 CI/CD |
-| `chore` | 🔧 其他 |
+| `chore` | 🔧 Other |
 
-## 要求
+## Requirements
 
 - Zig 0.16.0+
 - Git
