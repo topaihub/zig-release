@@ -50,7 +50,6 @@ fn git(alloc: std.mem.Allocator, argv: []const []const u8) ![]const u8 {
     var child = try std.process.spawn(io, .{ .argv = full.items, .stdout = .pipe, .stderr = .pipe });
     const file = child.stdout.?;
     var buf: std.ArrayListUnmanaged(u8) = .empty;
-    errdefer buf.deinit(alloc);
     var tmp: [4096]u8 = undefined;
     while (true) {
         const n = file.readStreaming(io, &.{&tmp}) catch break;
@@ -59,14 +58,8 @@ fn git(alloc: std.mem.Allocator, argv: []const []const u8) ![]const u8 {
     }
     const term = try child.wait(io);
     switch (term) {
-        .exited => |code| if (code != 0) {
-            buf.deinit(alloc);
-            return error.GitFailed;
-        },
-        else => {
-            buf.deinit(alloc);
-            return error.GitFailed;
-        },
+        .exited => |code| if (code != 0) return error.GitFailed,
+        else => return error.GitFailed,
     }
     return std.mem.trim(u8, buf.items, " \n\r");
 }
