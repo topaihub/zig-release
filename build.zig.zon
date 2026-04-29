@@ -1,6 +1,6 @@
 .{
     .name = .zig_release,
-    .version = "0.1.0",
+    .version = "0.2.0",
     .fingerprint = 0xedd745451ddf739e,
     .minimum_zig_version = "0.16.0",
     .dependencies = .{},
