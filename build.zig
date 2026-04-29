@@ -33,6 +33,7 @@ pub fn addReleaseStep(
     dep: *std.Build.Dependency,
     options: struct {
         repo_url: ?[]const u8 = null,
+        config_path: ?[]const u8 = null,
     },
 ) void {
     const release_step = b.step("release", "Tag and push a new release (-- patch|minor|major)");
@@ -42,6 +43,10 @@ pub fn addReleaseStep(
     if (options.repo_url) |url| {
         run.addArg("--repo");
         run.addArg(url);
+    }
+    if (options.config_path) |path| {
+        run.addArg("--config");
+        run.addArg(path);
     }
     if (b.args) |a| run.addArgs(a);
     release_step.dependOn(&run.step);
