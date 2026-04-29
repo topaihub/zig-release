@@ -16,6 +16,12 @@ pub fn build(b: *std.Build) void {
     const run_step = b.step("run", "Run release tool");
     run_step.dependOn(&run.step);
 
+    const self_release = b.addRunArtifact(release_exe);
+    self_release.setCwd(b.path("."));
+    if (b.args) |a| self_release.addArgs(a);
+    const release_step = b.step("release", "Tag and push a new release (-- patch|minor|major)");
+    release_step.dependOn(&self_release.step);
+
     const tests = b.addTest(.{
         .root_module = b.createModule(.{
             .root_source_file = b.path("src/main.zig"),
