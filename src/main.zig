@@ -88,12 +88,11 @@ fn defaultReleaseConfig() ReleaseConfig {
 }
 
 fn getIo() std.Io {
-    if (io_instance) |io| return io;
-    const threaded = std.Io.Threaded.global_single_threaded;
-    threaded.allocator = std.heap.page_allocator;
-    const io = threaded.*.io();
-    io_instance = io;
-    return io;
+    return io_instance.?;
+}
+
+pub fn initIo(init: std.process.Init) void {
+    io_instance = init.io;
 }
 
 fn print(alloc: std.mem.Allocator, comptime fmt: []const u8, args: anytype) void {
@@ -642,6 +641,8 @@ fn appendUnique(alloc: std.mem.Allocator, items: *std.ArrayListUnmanaged([]const
 }
 
 pub fn main(init: std.process.Init) !void {
+    initIo(init);
+
     var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
     defer arena.deinit();
     const alloc = arena.allocator();
